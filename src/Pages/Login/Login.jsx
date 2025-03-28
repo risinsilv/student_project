@@ -14,6 +14,9 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import instance from '../../Service/AxiosOrder';
 import Textfield from "../../Common/Textfield";
 import Passwordfield from "../../Common/Passwordfield";
+import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from "react-router-dom";
+
 
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
@@ -22,15 +25,13 @@ const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
 export default function Login() {
     const [emailT, setEmail] = useState('');
     const [passwordT, setPassword] = useState('');
-
-
-    const [nameT,setNameT] = useState('')
-    const [repassword,setRepassword] = useState('')
+    const [nameT, setNameT] = useState('')
+    const [repassword, setRepassword] = useState('')
     const [showPassword, setShowPassword] = useState(false);
-
     const [register, setRegister] = useState(false);
-
     const [alignment, setAlignment] = React.useState('web');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (event, newAlignment) => {
         setAlignment(newAlignment);
@@ -43,6 +44,7 @@ export default function Login() {
 
 
     const login = () => {
+        setLoading(true)
         instance.post('/login', {
             email: emailT,
             password: passwordT
@@ -50,15 +52,19 @@ export default function Login() {
             .then(function (response) {
                 localStorage.setItem('token', response.data.token)
                 console.log(response.data.token);
+                navigate('/Students')
+
             })
             .catch(function (error) {
                 console.log(error);
             })
             .finally(function () {
+                setLoading(false)
             });
 
     }
     const reg = () => {
+        setLoading(true)
         instance.post('/login', {
             name: nameT,
             email: emailT,
@@ -71,8 +77,9 @@ export default function Login() {
                 console.log(error);
             })
             .finally(function () {
+                setLoading(false)
             });
-        
+
     }
 
     return (
@@ -127,7 +134,7 @@ export default function Login() {
                     </Box>
                     <Box sx={{ color: 'black', fontFamily: 'bebas neue', fontSize: '64px', fontWeight: '400', display: 'flex', justifyContent: 'left', marginTop: '50px', marginLeft: '50px' }}>WELCOME BACK</Box>
                     <Box sx={{ color: 'black', fontFamily: 'bebas neue', fontSize: '30px', fontWeight: '400', display: 'flex', justifyContent: 'left', marginLeft: '50px', marginTop: "-20px" }}>ACPT Institute</Box>
-                    {!register && (
+                    {!register ? (
                         <>
                             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
                                 <Textfield label='Email' function={setEmail} />
@@ -136,38 +143,51 @@ export default function Login() {
                                 <Passwordfield function={setPassword} label='Password' />
                             </Box>
                         </>
-                    )}
-                    {register && (
-                        <>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
-                                <Textfield label='Name' function={setNameT} />
-                            </Box>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                                <Textfield label='Email' function={setEmail} />
-                            </Box>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                                <Passwordfield function={setPassword} label='Password' />
-                            </Box>
-                            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
-                                <Passwordfield function={setRepassword} label='Re enter password' />
-                            </Box>
+                    )
+                        : (
+                            <>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
+                                    <Textfield label='Name' function={setNameT} />
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                                    <Textfield label='Email' function={setEmail} />
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
+                                    <Passwordfield function={setPassword} label='Password' />
+                                </Box>
+                                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '15px' }}>
+                                    <Passwordfield function={setRepassword} label='Re enter password' />
+                                </Box>
 
 
-                        </>
-                    )}
-                    {!register && (
-                        <Box sx={{ display: 'flex', justifyContent: 'end', marginTop: '110px' }}>
-                            <Button sx={{ backgroundColor: 'transparent', color: 'black', height: '50px', fontSize: '20px', width: '100px', fontWeight: '700', fontFamily: 'bebas neue', border: '2px solid #F2BA1D', marginRight: '10%', borderRadius: '30px' }} onClick={login}>Log in</Button>
-                        </Box>
-                    )}
-                    {register && (
-                        <Box sx={{ display: 'flex', justifyContent: 'end', marginTop: '30px' }}>
-                            <Button sx={{ backgroundColor: 'transparent', color: 'black', height: '50px', fontSize: '20px', width: '100px', fontWeight: '700', fontFamily: 'bebas neue', border: '2px solid #F2BA1D', marginRight: '10%', borderRadius: '30px' }} onClick={reg}>Register</Button>
-                        </Box>
-                    )}
+                            </>
+                        )}
+                    <Box sx={{ display: 'flex', justifyContent: 'end', marginTop: register ? '35px' : '110px' }}>
+                        {loading ? (<CircularProgress sx={{marginRight:'10%', color:'#F2BA1D'}}/>)
+                            :
+                            (
+                                <Button
+                                    sx={{
+                                        backgroundColor: 'transparent',
+                                        color: 'black',
+                                        height: '50px',
+                                        fontSize: '20px',
+                                        width: '100px',
+                                        fontWeight: '700',
+                                        fontFamily: 'bebas neue',
+                                        border: '2px solid #F2BA1D',
+                                        marginRight: '10%',
+                                        borderRadius: '30px',
+                                    }}
+                                    onClick={register ? reg : login} // Dynamically set the onClick handler
+                                >
+                                    {register ? 'Register' : 'Log in'} {/* Dynamically set the button text */}
+                                </Button>
+                            )}
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+        </Box >
     )
 
 }
