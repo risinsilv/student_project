@@ -1,3 +1,13 @@
 * {
   margin: 0;
 }
+
+.swal-title {
+  font-family:'Bebas Neue';
+  font-size: 50px; 
+  color: grey; 
+}
+
+
+
+

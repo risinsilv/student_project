@@ -16,6 +16,9 @@ import Textfield from "../../Common/Textfield";
 import Passwordfield from "../../Common/Passwordfield";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from "react-router-dom";
+import Backdrop from '@mui/material/Backdrop';
+
+
 
 
 
@@ -30,8 +33,15 @@ export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
     const [register, setRegister] = useState(false);
     const [alignment, setAlignment] = React.useState('web');
-    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
+    const [open, setOpen] = React.useState(false);
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const handleOpen = () => {
+        setOpen(true);
+    };
 
     const handleChange = (event, newAlignment) => {
         setAlignment(newAlignment);
@@ -44,7 +54,7 @@ export default function Login() {
 
 
     const login = () => {
-        setLoading(true)
+        handleOpen()
         instance.post('/login', {
             email: emailT,
             password: passwordT
@@ -59,12 +69,12 @@ export default function Login() {
                 console.log(error);
             })
             .finally(function () {
-                setLoading(false)
+                handleClose()
             });
 
     }
     const reg = () => {
-        setLoading(true)
+        handleOpen()
         instance.post('/login', {
             name: nameT,
             email: emailT,
@@ -77,7 +87,7 @@ export default function Login() {
                 console.log(error);
             })
             .finally(function () {
-                setLoading(false)
+                handleClose()
             });
 
     }
@@ -137,20 +147,20 @@ export default function Login() {
                     {!register ? (
                         <>
                             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
-                                <Textfield label='Email' function={setEmail} />
+                                <Textfield label='Email' function={setEmail} width='80%'/>
                             </Box>
                             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
-                                <Passwordfield function={setPassword} label='Password' />
+                                <Passwordfield function={setPassword} label='Password' w/>
                             </Box>
                         </>
                     )
                         : (
                             <>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '30px' }}>
-                                    <Textfield label='Name' function={setNameT} />
+                                    <Textfield label='Name' function={setNameT} width='80%'/>
                                 </Box>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-                                    <Textfield label='Email' function={setEmail} />
+                                    <Textfield label='Email' function={setEmail} width='80%'/>
                                 </Box>
                                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
                                     <Passwordfield function={setPassword} label='Password' />
@@ -163,27 +173,31 @@ export default function Login() {
                             </>
                         )}
                     <Box sx={{ display: 'flex', justifyContent: 'end', marginTop: register ? '35px' : '110px' }}>
-                        {loading ? (<CircularProgress sx={{marginRight:'10%', color:'#F2BA1D'}}/>)
-                            :
-                            (
-                                <Button
-                                    sx={{
-                                        backgroundColor: 'transparent',
-                                        color: 'black',
-                                        height: '50px',
-                                        fontSize: '20px',
-                                        width: '100px',
-                                        fontWeight: '700',
-                                        fontFamily: 'bebas neue',
-                                        border: '2px solid #F2BA1D',
-                                        marginRight: '10%',
-                                        borderRadius: '30px',
-                                    }}
-                                    onClick={register ? reg : login} // Dynamically set the onClick handler
-                                >
-                                    {register ? 'Register' : 'Log in'} {/* Dynamically set the button text */}
-                                </Button>
-                            )}
+
+                        <Button
+                            sx={{
+                                backgroundColor: 'transparent',
+                                color: 'black',
+                                height: '50px',
+                                fontSize: '20px',
+                                width: '100px',
+                                fontWeight: '700',
+                                fontFamily: 'bebas neue',
+                                border: '2px solid #F2BA1D',
+                                marginRight: '10%',
+                                borderRadius: '30px',
+                            }}
+                            onClick={register ? reg : login} // Dynamically set the onClick handler
+                        >
+                            {register ? 'Register' : 'Log in'} {/* Dynamically set the button text */}
+                        </Button>
+                        <Backdrop
+                            sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
+                            open={open}
+                        >
+                            <CircularProgress sx={{backgroundColor:'#F2BA1D', scale:'2', color:'transparent'}} />
+                        </Backdrop>
+
                     </Box>
                 </Box>
             </Box>

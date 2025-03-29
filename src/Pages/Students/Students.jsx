@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material";
+import { Backdrop, Box, Button, CircularProgress } from "@mui/material";
 import "@fontsource/bebas-neue";
 import Table from '../../Common/Table/Table'
 import { useEffect, useState } from "react";
@@ -9,13 +9,28 @@ import Stack from '@mui/material/Stack';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
+import StudentPopUp from "../../Common/StudentPopUp/StudentPopUp";
+import Swal from 'sweetalert2'
 
 
 export default function Students() {
 
     const [students, setStudents] = useState(null)
+    const [name, setName] = useState('');
+    const [age, setAge] = useState('');
+    const [address, setAddress] = useState('');
+    const [contact, setContact] = useState('');
     const navigate = useNavigate()
+    const [open, setOpen] = React.useState(false);
+    
+    const handleClose = () => {
+        setOpen(false);
+    };
+    const handleOpen = () => {
+        setOpen(true);
+    };
     const getAllStudent = () => {
+        handleOpen()
         instance.get('/student/getAll', {})
             .then(function (response) {
                 setStudents(response.data)
@@ -25,6 +40,7 @@ export default function Students() {
                 console.log(error);
             })
             .finally(function () {
+                handleClose()
             });
 
     }
@@ -36,13 +52,63 @@ export default function Students() {
         navigate('/Login')
 
     }
+    const [open1, setOpen1] = React.useState(false);
+
+    const Open = () => {
+        setOpen1(true);
+    };
+    const Close = () => {
+        setOpen1(false);
+    };
+
+    const saveStudent = () => {
+        handleOpen()
+        instance.post('/student/save', {
+            student_name: name,
+            student_age: age,
+            student_address: address,
+            student_contact: contact
+        })
+            .then(function (response) {
+                console.log(response);
+                Close()
+                handleClose()
+                sucess()
+            })
+            .catch(function (error) {
+                console.log(error);
+            })
+            .finally(function () {
+            
+            });
+    }
+    const sucess = ()=> {
+
+        Swal.fire({
+            title: "Successfully Added",
+            icon: "success",
+            customClass: {
+                title: 'swal-title', 
+            },
+        });
+    }
+
 
     return (
         <>
             <Box sx={{ color: 'black', fontFamily: 'bebas neue', fontSize: '40px', fontWeight: '400', display: 'flex', justifyContent: 'left', marginLeft: '40px', marginTop: '30px' }}>MY STUDENT</Box>
             <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Box sx={{ width: '80vw', display: 'flex', justifyContent: 'end' }}>
-                    <Button sx={{ backgroundColor: '#F2BA1D', color: 'black', paddingX: '15px', height: '50px', fontSize: '30px', fontWeight: '600', fontFamily: 'bebas neue', border: '2px solid #F2BA1D', borderRadius: '30px' }} ><PersonAddIcon sx={{ fontSize: '35px', marginRight: '10px', marginBottom: '3px' }} /> ADD STUDENT</Button>
+                    <Button sx={{ backgroundColor: '#F2BA1D', color: 'black', paddingX: '15px', height: '50px', fontSize: '30px', fontWeight: '600', fontFamily: 'bebas neue', border: '2px solid #F2BA1D', borderRadius: '30px' }} onClick={Open}><PersonAddIcon sx={{ fontSize: '35px', marginRight: '10px', marginBottom: '3px' }} /> ADD STUDENT</Button>
+                    <StudentPopUp handleClickOpen={Open} handleClose={Close} open={open1} sname={setName} sage={setAge} saddress={setAddress} scontact={setContact} function1={saveStudent}/>
+                    <Backdrop
+                        sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.modal + 1 })}
+                        open={open}
+            
+                    >
+                        <CircularProgress sx={{ backgroundColor: '#F2BA1D', scale: '2', color: 'transparent' }} />
+                    </Backdrop>
+
                 </Box>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
