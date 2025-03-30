@@ -21,8 +21,7 @@ const columns = [
     { id: 'action', label: 'action' }
 ];
 
-// Function to create row data
-// Sample data
+// 
 
 
 export default function StickyHeadTable(props) {
@@ -87,10 +86,10 @@ export default function StickyHeadTable(props) {
                                                 >
                                                     {column.id === 'action' ? (
                                                         <>
-                                                            <IconButton aria-label="delete" key={column.id}> 
+                                                            <IconButton aria-label="delete" > 
                                                                 <EditIcon sx={{ color: 'black' }} />
                                                             </IconButton>
-                                                            <IconButton aria-label="delete" key={column.id}>
+                                                            <IconButton aria-label="delete" onClick={()=> props.sdelete(row.id)} >
                                                                 <DeleteIcon sx={{ color: 'black' }} />
                                                             </IconButton>
 

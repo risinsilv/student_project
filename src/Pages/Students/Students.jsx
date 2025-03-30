@@ -11,6 +11,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { useNavigate } from "react-router-dom";
 import StudentPopUp from "../../Common/StudentPopUp/StudentPopUp";
 import Swal from 'sweetalert2'
+import { HandymanSharp } from "@mui/icons-material";
 
 
 export default function Students() {
@@ -72,25 +73,58 @@ export default function Students() {
             .then(function (response) {
                 console.log(response);
                 Close()
-                handleClose()
                 sucess()
+                getAllStudent()
             })
             .catch(function (error) {
                 console.log(error);
+                fail()
             })
             .finally(function () {
+                handleClose()
+            });
+    }
+
+    const deleteStudent = (id) =>{
+        handleOpen()
+        instance.delete(`/student/delete/${id}`, {
             
+        })
+            .then(function (response) {
+                console.log(response);
+                sucess()
+                getAllStudent()
+            })
+            .catch(function (error) {
+                console.log(error);
+                fail()
+            })
+            .finally(function () {
+                handleClose()
             });
     }
     const sucess = ()=> {
 
         Swal.fire({
-            title: "Successfully Added",
+            title: "Successfull",
             icon: "success",
             customClass: {
                 title: 'swal-title', 
             },
         });
+
+    }
+
+    const fail = ()=> {
+
+        Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "Something went wrong!",
+            customClass: {
+                title: 'swal-title', 
+            },
+          });
     }
 
 
@@ -116,7 +150,7 @@ export default function Students() {
                     <Box sx={{ width: '80vw', border: '5px solid black', borderRadius: '20px' }}>
                         <Box sx={{ padding: '30px' }}>
 
-                            <Table data={students} />
+                            <Table data={students} sdelete={deleteStudent}/>
 
 
                         </Box>
